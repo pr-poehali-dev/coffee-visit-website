@@ -3,10 +3,41 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    name: '',
+    phone: '',
+    date: '',
+    time: '',
+    guests: '2'
+  });
+  const { toast } = useToast();
+
+  const handleBooking = () => {
+    if (!bookingData.name || !bookingData.phone || !bookingData.date || !bookingData.time) {
+      toast({
+        title: 'Заполните все поля',
+        description: 'Пожалуйста, укажите все данные для бронирования',
+        variant: 'destructive'
+      });
+      return;
+    }
+    toast({
+      title: 'Столик забронирован!',
+      description: `${bookingData.name}, ждём вас ${bookingData.date} в ${bookingData.time}. Мы перезвоним для подтверждения.`
+    });
+    setBookingOpen(false);
+    setBookingData({ name: '', phone: '', date: '', time: '', guests: '2' });
+  };
 
   const menuItems = {
     coffee: [
@@ -52,6 +83,7 @@ const Index = () => {
           <nav className="hidden md:flex gap-6">
             <a href="#menu" className="text-foreground hover:text-primary transition-colors">Меню</a>
             <a href="#gallery" className="text-foreground hover:text-primary transition-colors">Галерея</a>
+            <a href="#booking" className="text-foreground hover:text-primary transition-colors">Бронирование</a>
             <a href="#events" className="text-foreground hover:text-primary transition-colors">События</a>
             <a href="#reviews" className="text-foreground hover:text-primary transition-colors">Отзывы</a>
             <a href="#contact" className="text-foreground hover:text-primary transition-colors">Контакты</a>
@@ -209,6 +241,101 @@ const Index = () => {
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+      </section>
+
+      <section id="booking" className="py-16 px-4">
+        <div className="container mx-auto max-w-2xl">
+          <h2 className="text-4xl font-bold text-center mb-4 text-primary">Бронирование столика</h2>
+          <p className="text-center text-muted-foreground mb-8">Забронируйте столик заранее, чтобы мы подготовили для вас лучшее место</p>
+          <Card className="shadow-lg">
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Ваше имя *</Label>
+                    <Input
+                      id="name"
+                      placeholder="Иван Иванов"
+                      value={bookingData.name}
+                      onChange={(e) => setBookingData({ ...bookingData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Телефон *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+7 (___) ___-__-__"
+                      value={bookingData.phone}
+                      onChange={(e) => setBookingData({ ...bookingData, phone: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Дата *</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={bookingData.date}
+                      onChange={(e) => setBookingData({ ...bookingData, date: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Время *</Label>
+                    <Select value={bookingData.time} onValueChange={(value) => setBookingData({ ...bookingData, time: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите время" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="09:00">09:00</SelectItem>
+                        <SelectItem value="10:00">10:00</SelectItem>
+                        <SelectItem value="11:00">11:00</SelectItem>
+                        <SelectItem value="12:00">12:00</SelectItem>
+                        <SelectItem value="13:00">13:00</SelectItem>
+                        <SelectItem value="14:00">14:00</SelectItem>
+                        <SelectItem value="15:00">15:00</SelectItem>
+                        <SelectItem value="16:00">16:00</SelectItem>
+                        <SelectItem value="17:00">17:00</SelectItem>
+                        <SelectItem value="18:00">18:00</SelectItem>
+                        <SelectItem value="19:00">19:00</SelectItem>
+                        <SelectItem value="20:00">20:00</SelectItem>
+                        <SelectItem value="21:00">21:00</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="guests">Количество гостей</Label>
+                  <Select value={bookingData.guests} onValueChange={(value) => setBookingData({ ...bookingData, guests: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 гость</SelectItem>
+                      <SelectItem value="2">2 гостя</SelectItem>
+                      <SelectItem value="3">3 гостя</SelectItem>
+                      <SelectItem value="4">4 гостя</SelectItem>
+                      <SelectItem value="5">5 гостей</SelectItem>
+                      <SelectItem value="6">6 гостей</SelectItem>
+                      <SelectItem value="7">7 гостей</SelectItem>
+                      <SelectItem value="8">8+ гостей</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="pt-4">
+                  <Button className="w-full bg-accent hover:bg-accent/90" size="lg" onClick={handleBooking}>
+                    <Icon name="Calendar" size={20} className="mr-2" />
+                    Забронировать столик
+                  </Button>
+                  <p className="text-sm text-muted-foreground text-center mt-3">
+                    Мы перезвоним вам для подтверждения бронирования
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
